@@ -34,16 +34,16 @@ class Rover
 
             switch ($this->facing) {
                 case CardinalPoint::North:
-                    $x++;
-                    break;
-                case CardinalPoint::South:
-                    $x--;
-                    break;
-                case CardinalPoint::East:
                     $y++;
                     break;
-                case CardinalPoint::West:
+                case CardinalPoint::South:
                     $y--;
+                    break;
+                case CardinalPoint::East:
+                    $x++;
+                    break;
+                case CardinalPoint::West:
+                    $x--;
                     break;
             }
 
