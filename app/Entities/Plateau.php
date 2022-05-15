@@ -4,14 +4,34 @@ namespace App\Entities;
 
 class Plateau
 {
+    private array $occupiedPositions;
+
     public function __construct(
         private int $xUpperRightCoordinate,
         private int $yUpperRightCoordinate,
-    ) { }
+    ) {
+        $this->occupiedPositions = [];
+    }
 
-    public function coordinatesAreValid(int $x, int $y): bool
+    public function positionIsValid(Position $position): bool
     {
-        return $x >= 0 && $x <= $this->xUpperRightCoordinate &&
-            $y >= 0 && $y <= $this->yUpperRightCoordinate;
+        return $position->getX() >= 0 && $position->getX() <= $this->xUpperRightCoordinate &&
+            $position->getY() >= 0 && $position->getY() <= $this->yUpperRightCoordinate;
+    }
+
+    public function setOccupiedPositions(array $positions): void
+    {
+        $this->occupiedPositions = $positions;
+    }
+
+    public function positionIsOccupied(Position $position): bool
+    {
+        foreach ($this->occupiedPositions as $occupiedPosition) {
+            if ($occupiedPosition->is($position)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
