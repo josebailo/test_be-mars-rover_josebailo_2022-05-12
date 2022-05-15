@@ -7,16 +7,17 @@ class Plateau
     private array $occupiedPositions;
 
     public function __construct(
-        private int $xUpperRightCoordinate,
-        private int $yUpperRightCoordinate,
+        private PlateauCoordinates $coordinates
     ) {
         $this->occupiedPositions = [];
     }
 
     public function positionIsValid(Position $position): bool
     {
-        return $position->getX() >= 0 && $position->getX() <= $this->xUpperRightCoordinate &&
-            $position->getY() >= 0 && $position->getY() <= $this->yUpperRightCoordinate;
+        return $position->getX() >= $this->coordinates->getXBottomLeftCoordinate() &&
+            $position->getX() <= $this->coordinates->getXUpperRightCoordinate() &&
+            $position->getY() >= $this->coordinates->getYBottomLeftCoordinate() &&
+            $position->getY() <= $this->coordinates->getYUpperRightCoordinate();
     }
 
     public function setOccupiedPositions(array $positions): void
