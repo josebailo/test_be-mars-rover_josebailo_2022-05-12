@@ -24,7 +24,7 @@ class Rover
         $nextMovement = $this->movements[0];
 
         // if the rover only turns the position will be the same
-        if ($nextMovement === Movements::Right || $nextMovement === Movements::Left) {
+        if ($nextMovement->isTurningMovement()) {
             return $this->position;
         }
 
@@ -51,5 +51,22 @@ class Rover
         }
 
         throw new \Error('Movement unknown!');
+    }
+
+    public function move(): void
+    {
+        $nextMovement = $this->movements[0];
+
+        if ($nextMovement->isTurningMovement()) {
+            if ($nextMovement === Movements::Right) {
+                $this->facing = $this->facing->nextPointTurningRight();
+            } else {
+                $this->facing = $this->facing->nextPointTurningLeft();
+            }
+        } else {
+            $this->position = $this->getNextPosition();
+        }
+
+        array_shift($this->movements);
     }
 }

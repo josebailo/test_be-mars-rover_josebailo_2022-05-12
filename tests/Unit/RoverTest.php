@@ -31,4 +31,47 @@ class RoverTest extends TestCase
         $rover = new Rover(new Position(1, 2), CardinalPoint::West, [Movements::Move]);
         $this->assertEquals($rover->getNextPosition(), new Position(0, 2));
     }
+
+    /** @test */
+    public function move_to_his_next_position()
+    {
+        $rover = new Rover(new Position(1, 2), CardinalPoint::North, [
+            Movements::Move,
+            Movements::Right,
+            Movements::Move,
+            Movements::Left,
+            Movements::Left,
+            Movements::Move,
+            Movements::Move,
+            Movements::Left,
+            Movements::Move,
+            Movements::Move,
+            Movements::Left,
+            Movements::Move,
+        ]);
+        $rover->move();
+        $this->assertEquals($rover->getStatus(), '1 3 N');
+        $rover->move();
+        $this->assertEquals($rover->getStatus(), '1 3 E');
+        $rover->move();
+        $this->assertEquals($rover->getStatus(), '2 3 E');
+        $rover->move();
+        $this->assertEquals($rover->getStatus(), '2 3 N');
+        $rover->move();
+        $this->assertEquals($rover->getStatus(), '2 3 W');
+        $rover->move();
+        $this->assertEquals($rover->getStatus(), '1 3 W');
+        $rover->move();
+        $this->assertEquals($rover->getStatus(), '0 3 W');
+        $rover->move();
+        $this->assertEquals($rover->getStatus(), '0 3 S');
+        $rover->move();
+        $this->assertEquals($rover->getStatus(), '0 2 S');
+        $rover->move();
+        $this->assertEquals($rover->getStatus(), '0 1 S');
+        $rover->move();
+        $this->assertEquals($rover->getStatus(), '0 1 E');
+        $rover->move();
+        $this->assertEquals($rover->getStatus(), '1 1 E');
+    }
 }
