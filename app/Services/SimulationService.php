@@ -33,7 +33,7 @@ class SimulationService
                 $rover->move();
             }
 
-            $roversLastPositions[] = $rover->getStatus();
+            $roversLastPositions[] = $rover->getSituation();
         }
 
         return implode("\n", $roversLastPositions);

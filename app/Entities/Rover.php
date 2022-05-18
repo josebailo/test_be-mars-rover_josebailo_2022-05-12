@@ -9,14 +9,13 @@ class Rover
 {
     public function __construct(
         private Position $position,
-        private CardinalPoint $facing,
+        private CardinalPoint $heading,
         private array $movements = [],
     ) { }
 
-    // TODO find better name
-    public function getStatus(): string
+    public function getSituation(): string
     {
-        return "{$this->position->getX()} {$this->position->getY()} {$this->facing->value}";
+        return "{$this->position->getX()} {$this->position->getY()} {$this->heading->value}";
     }
 
     public function getNextPosition(): Position
@@ -32,7 +31,7 @@ class Rover
             $x = $this->position->getX();
             $y = $this->position->getY();
 
-            switch ($this->facing) {
+            switch ($this->heading) {
                 case CardinalPoint::North:
                     $y++;
                     break;
@@ -59,9 +58,9 @@ class Rover
 
         if ($nextMovement->isTurningMovement()) {
             if ($nextMovement === Movements::Right) {
-                $this->facing = $this->facing->nextPointTurningRight();
+                $this->heading = $this->heading->nextPointTurningRight();
             } else {
-                $this->facing = $this->facing->nextPointTurningLeft();
+                $this->heading = $this->heading->nextPointTurningLeft();
             }
         } else {
             $this->position = $this->getNextPosition();

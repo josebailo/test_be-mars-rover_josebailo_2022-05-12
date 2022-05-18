@@ -11,12 +11,12 @@ use PHPUnit\Framework\TestCase;
 class RoverTest extends TestCase
 {
     /** @test */
-    public function returns_his_status()
+    public function returns_his_situation()
     {
         $rover = new Rover(new Position(1, 2), CardinalPoint::North);
-        $this->assertEquals($rover->getStatus(), '1 2 N');
+        $this->assertEquals($rover->getSituation(), '1 2 N');
         $rover = new Rover(new Position(3, 5), CardinalPoint::East);
-        $this->assertEquals($rover->getStatus(), '3 5 E');
+        $this->assertEquals($rover->getSituation(), '3 5 E');
     }
 
     /** @test */
@@ -50,28 +50,28 @@ class RoverTest extends TestCase
             Movements::Move,
         ]);
         $rover->move();
-        $this->assertEquals($rover->getStatus(), '1 3 N');
+        $this->assertEquals($rover->getSituation(), '1 3 N');
         $rover->move();
-        $this->assertEquals($rover->getStatus(), '1 3 E');
+        $this->assertEquals($rover->getSituation(), '1 3 E');
         $rover->move();
-        $this->assertEquals($rover->getStatus(), '2 3 E');
+        $this->assertEquals($rover->getSituation(), '2 3 E');
         $rover->move();
-        $this->assertEquals($rover->getStatus(), '2 3 N');
+        $this->assertEquals($rover->getSituation(), '2 3 N');
         $rover->move();
-        $this->assertEquals($rover->getStatus(), '2 3 W');
+        $this->assertEquals($rover->getSituation(), '2 3 W');
         $rover->move();
-        $this->assertEquals($rover->getStatus(), '1 3 W');
+        $this->assertEquals($rover->getSituation(), '1 3 W');
         $rover->move();
-        $this->assertEquals($rover->getStatus(), '0 3 W');
+        $this->assertEquals($rover->getSituation(), '0 3 W');
         $rover->move();
-        $this->assertEquals($rover->getStatus(), '0 3 S');
+        $this->assertEquals($rover->getSituation(), '0 3 S');
         $rover->move();
-        $this->assertEquals($rover->getStatus(), '0 2 S');
+        $this->assertEquals($rover->getSituation(), '0 2 S');
         $rover->move();
-        $this->assertEquals($rover->getStatus(), '0 1 S');
+        $this->assertEquals($rover->getSituation(), '0 1 S');
         $rover->move();
-        $this->assertEquals($rover->getStatus(), '0 1 E');
+        $this->assertEquals($rover->getSituation(), '0 1 E');
         $rover->move();
-        $this->assertEquals($rover->getStatus(), '1 1 E');
+        $this->assertEquals($rover->getSituation(), '1 1 E');
     }
 }
