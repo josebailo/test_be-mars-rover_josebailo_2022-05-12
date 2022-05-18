@@ -17,11 +17,19 @@ class SimulationServiceTest extends TestCase
     }
 
     /** @test */
-    /** @skip */
     public function throws_an_error_if_a_rover_cannot_move_because_the_next_position_is_occupied()
     {
         $this->expectError();
         $instructions = "5 5\n1 2 N\nM M R M\n2 2 N\nM M M";
+        $simulationService = new SimulationService();
+        $simulationService->simulate($instructions);
+    }
+
+    /** @test */
+    public function throws_an_error_if_a_rover_is_going_to_move_out_of_the_plateau()
+    {
+        $this->expectError();
+        $instructions = "5 5\n1 2 N\nM M M M M M M M M";
         $simulationService = new SimulationService();
         $simulationService->simulate($instructions);
     }

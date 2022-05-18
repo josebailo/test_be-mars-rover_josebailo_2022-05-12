@@ -3,14 +3,12 @@
 namespace App\Entities;
 
 use App\Enums\CardinalPoint;
-use App\Enums\Movements;
 
 class Rover
 {
     public function __construct(
         private Position $position,
         private CardinalPoint $heading,
-        private array $movements = [],
     ) { }
 
     public function getSituation(): string
@@ -18,54 +16,46 @@ class Rover
         return "{$this->position->getX()} {$this->position->getY()} {$this->heading->value}";
     }
 
-    public function getNextPosition(): Position
+    public function getPosition(): Position
     {
-        $nextMovement = $this->movements[0];
-
-        // if the rover only turns the position will be the same
-        if ($nextMovement->isTurningMovement()) {
-            return $this->position;
-        }
-
-        if ($nextMovement === Movements::Move) {
-            $x = $this->position->getX();
-            $y = $this->position->getY();
-
-            switch ($this->heading) {
-                case CardinalPoint::North:
-                    $y++;
-                    break;
-                case CardinalPoint::South:
-                    $y--;
-                    break;
-                case CardinalPoint::East:
-                    $x++;
-                    break;
-                case CardinalPoint::West:
-                    $x--;
-                    break;
-            }
-
-            return new Position($x, $y);
-        }
-
-        throw new \Error('Movement unknown!');
+        return $this->position;
     }
 
-    public function move(): void
+    public function getForwardPosition(): Position
     {
-        $nextMovement = $this->movements[0];
+        $x = $this->position->getX();
+        $y = $this->position->getY();
 
-        if ($nextMovement->isTurningMovement()) {
-            if ($nextMovement === Movements::Right) {
-                $this->heading = $this->heading->nextPointTurningRight();
-            } else {
-                $this->heading = $this->heading->nextPointTurningLeft();
-            }
-        } else {
-            $this->position = $this->getNextPosition();
+        switch ($this->heading) {
+            case CardinalPoint::North:
+                $y++;
+                break;
+            case CardinalPoint::South:
+                $y--;
+                break;
+            case CardinalPoint::East:
+                $x++;
+                break;
+            case CardinalPoint::West:
+                $x--;
+                break;
         }
 
-        array_shift($this->movements);
+        return new Position($x, $y);
+    }
+
+    public function moveForward(): void
+    {
+        $this->position = $this->getForwardPosition();
+    }
+
+    public function turnLeft(): void
+    {
+        $this->heading = $this->heading->nextPointTurningLeft();
+    }
+
+    public function turnRight(): void
+    {
+        $this->heading = $this->heading->nextPointTurningRight();
     }
 }

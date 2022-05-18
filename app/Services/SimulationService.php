@@ -18,25 +18,32 @@ class SimulationService
         $parseInstructionsService->parse($instructions);
 
         $plateau = $this->generatePlateau($parseInstructionsService->getPlateauCoordinatesCommand());
-        $roversLastPositions = [];
+        $rovers = $this->generateRovers($parseInstructionsService->getRoverCommands());
+        $roversMovements = $this->generateRoversMovements($parseInstructionsService->getRoverCommands());
 
-        foreach ($parseInstructionsService->getRoverCommands() as $roverCommands) {
-            $rover = $this->generateRover($roverCommands);
+        foreach ($roversMovements as $index => $movements) {
+            $rover = $rovers[$index];
 
-            for ($i = 0; $i < count($roverCommands['movementsList']); $i++) {
-                $nextPosition = $rover->getNextPosition();
+            foreach ($movements as $movement) {
+                if ($movement->isTurningMovement()) {
+                    $movement === Movements::Right ? $rover->turnRight() : $rover->turnLeft();
+                } else {
+                    $roverForwardPosition = $rover->getForwardPosition();
 
-                if ($plateau->positionIsOccupied($nextPosition)) {
-                    throw new Error('The next positions is already occupied. Impossible to move.');
+                    if (!$plateau->coordinatesAreValid($roverForwardPosition->getX(), $roverForwardPosition->getY())) {
+                        throw new Error('The next position is out of the plateau. Impossible to move.');
+                    }
+
+                    if (in_array($roverForwardPosition, $this->getRoversPositions($rovers))) {
+                        throw new Error('The next position is already occupied. Impossible to move.');
+                    }
+
+                    $rover->moveForward();
                 }
-
-                $rover->move();
             }
-
-            $roversLastPositions[] = $rover->getSituation();
         }
 
-        return implode("\n", $roversLastPositions);
+        return $this->generateRoversSituationOutput($rovers);
     }
 
     private function generatePlateau(array $plateauCoordinatesCommand): Plateau
@@ -44,15 +51,48 @@ class SimulationService
         return new Plateau($plateauCoordinatesCommand['x'], $plateauCoordinatesCommand['y']);
     }
 
-    private function generateRover(array $roverCommands): Rover
+    private function getRoversPositions($rovers): array
     {
-        $position = new Position($roverCommands['position']['x'], $roverCommands['position']['y']);
-        $facing = CardinalPoint::from($roverCommands['facing']);
-        $movements = array_map(
-            fn ($movement) => Movements::from($movement),
-            $roverCommands['movementsList']
-        );
+        $positions = [];
+        foreach ($rovers as $rover) {
+            $positions[] = $rover->getPosition();
+        }
+        return $positions;
+    }
 
-        return new Rover($position, $facing, $movements);
+    private function generateRoversSituationOutput($rovers): string
+    {
+        $situations = [];
+        foreach ($rovers as $rover) {
+            $situations[] = $rover->getSituation();
+        }
+        return implode("\n", $situations);
+    }
+
+    private function generateRovers(array $roverCommands): array
+    {
+        $rovers = [];
+
+        foreach ($roverCommands as $command) {
+            $position = new Position($command['position']['x'], $command['position']['y']);
+            $facing = CardinalPoint::from($command['facing']);
+            $rovers[] = new Rover($position, $facing);
+        }
+
+        return $rovers;
+    }
+
+    private function generateRoversMovements(array $roverCommands): array
+    {
+        $movements = [];
+
+        foreach ($roverCommands as $command) {
+            $movements[] = array_map(
+                fn ($movement) => Movements::from($movement),
+                $command['movementsList']
+            );
+        }
+
+        return $movements;
     }
 }
