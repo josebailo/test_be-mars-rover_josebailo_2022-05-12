@@ -2,55 +2,56 @@
 
 namespace App\Services;
 
+use App\Entities\Instructions;
+
 class ParseInstructionsService
 {
-    private array $plateauCoordinatesCommand;
-    private array $roverCommands;
-
-    public function parse(string $instructions): void
+    public function parse(string $instructions): Instructions
     {
-        $commands = explode("\n", $instructions);
-        $plateauCoordinatesCommand = $commands[0];
-        $roverCommands = array_slice($commands, 1);
+        [$plateauInstruction, $roversInstructions] = $this->splitInstructions($instructions);
 
-        $this->parsePlateauCoordinatesCommand($plateauCoordinatesCommand);
-        $this->parseRoverCommands($roverCommands);
+        $plateauCoordinates = $this->parsePlateauInstruction($plateauInstruction);
+        $roversInformation = $this->parseRoversInstructions($roversInstructions);
+
+        return new Instructions($plateauCoordinates, $roversInformation);
     }
 
-    public function getPlateauCoordinatesCommand(): array
+    private function splitInstructions(string $instructions): array
     {
-        return $this->plateauCoordinatesCommand;
+        $instructionsLines = explode("\n", $instructions);
+        $plateauInstruction = $instructionsLines[0];
+        $roversInstructions = array_slice($instructionsLines, 1);
+
+        return [$plateauInstruction, $roversInstructions];
     }
 
-    public function getRoverCommands(): array
+    private function parsePlateauInstruction(string $instruction): array
     {
-        return $this->roverCommands;
-    }
+        [$x, $y] = explode(' ', $instruction);
 
-    private function parsePlateauCoordinatesCommand(string $command): void
-    {
-        list($x, $y) = explode(' ', $command);
-
-        $this->plateauCoordinatesCommand = [
+        return [
             'x' => $x,
             'y' => $y,
         ];
     }
 
-    private function parseRoverCommands(array $commands): void
+    private function parseRoversInstructions(array $instructions): array
     {
-        $commandsByRover = array_chunk($commands, 2);
-        $this->roverCommands = array_map(function ($rover) {
-            list($xCoordinate, $yCoordinate, $facing) = explode(' ', $rover[0]);
-            $movementsList = explode(' ', $rover[1]);
+        $instructionsByRover = array_chunk($instructions, 2);
+
+        return array_map(function ($roverInstructions) {
+            [$situation, $movementsList] = $roverInstructions;
+            [$xCoordinate, $yCoordinate, $heading] = explode(' ', $situation);
+            $movements = explode(' ', $movementsList);
+
             return [
                 'position' => [
                     'x' => $xCoordinate,
                     'y' => $yCoordinate
                 ],
-                'facing' => $facing,
-                'movementsList' => $movementsList,
+                'heading' => $heading,
+                'movements' => $movements,
             ];
-        }, $commandsByRover);
+        }, $instructionsByRover);
     }
 }

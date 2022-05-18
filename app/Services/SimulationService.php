@@ -2,24 +2,21 @@
 
 namespace App\Services;
 
+use App\Entities\Instructions;
 use App\Entities\Plateau;
 use App\Entities\Position;
 use App\Entities\Rover;
 use App\Enums\CardinalPoint;
 use App\Enums\Movements;
-use App\Services\ParseInstructionsService;
 use Error;
 
 class SimulationService
 {
-    public function simulate(string $instructions): string
+    public function simulate(Instructions $instructions): string
     {
-        $parseInstructionsService = new ParseInstructionsService();
-        $parseInstructionsService->parse($instructions);
-
-        $plateau = $this->generatePlateau($parseInstructionsService->getPlateauCoordinatesCommand());
-        $rovers = $this->generateRovers($parseInstructionsService->getRoverCommands());
-        $roversMovements = $this->generateRoversMovements($parseInstructionsService->getRoverCommands());
+        $plateau = $this->createPlateau($instructions->getPlateauCoordinates());
+        $rovers = $this->createRovers($instructions->getRoversInformation());
+        $roversMovements = $this->createRoversMovements($instructions->getRoversInformation());
 
         foreach ($roversMovements as $index => $movements) {
             $rover = $rovers[$index];
@@ -43,12 +40,12 @@ class SimulationService
             }
         }
 
-        return $this->generateRoversSituationOutput($rovers);
+        return $this->createRoversSituationOutput($rovers);
     }
 
-    private function generatePlateau(array $plateauCoordinatesCommand): Plateau
+    private function createPlateau(array $plateauCoordinates): Plateau
     {
-        return new Plateau($plateauCoordinatesCommand['x'], $plateauCoordinatesCommand['y']);
+        return new Plateau($plateauCoordinates['x'], $plateauCoordinates['y']);
     }
 
     private function getRoversPositions($rovers): array
@@ -60,7 +57,7 @@ class SimulationService
         return $positions;
     }
 
-    private function generateRoversSituationOutput($rovers): string
+    private function createRoversSituationOutput($rovers): string
     {
         $situations = [];
         foreach ($rovers as $rover) {
@@ -69,27 +66,27 @@ class SimulationService
         return implode("\n", $situations);
     }
 
-    private function generateRovers(array $roverCommands): array
+    private function createRovers(array $roversInformation): array
     {
         $rovers = [];
 
-        foreach ($roverCommands as $command) {
+        foreach ($roversInformation as $command) {
             $position = new Position($command['position']['x'], $command['position']['y']);
-            $facing = CardinalPoint::from($command['facing']);
-            $rovers[] = new Rover($position, $facing);
+            $heading = CardinalPoint::from($command['heading']);
+            $rovers[] = new Rover($position, $heading);
         }
 
         return $rovers;
     }
 
-    private function generateRoversMovements(array $roverCommands): array
+    private function createRoversMovements(array $roverCommands): array
     {
         $movements = [];
 
         foreach ($roverCommands as $command) {
             $movements[] = array_map(
                 fn ($movement) => Movements::from($movement),
-                $command['movementsList']
+                $command['movements']
             );
         }
 
