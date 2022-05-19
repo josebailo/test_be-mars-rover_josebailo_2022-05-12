@@ -2,13 +2,13 @@
 
 namespace App\Entities;
 
-use App\Enums\CardinalPoint;
+use App\Enums\Heading;
 
 class Rover
 {
     public function __construct(
         private Position $position,
-        private CardinalPoint $heading,
+        private Heading $heading,
     ) { }
 
     public function getSituation(): string
@@ -27,16 +27,16 @@ class Rover
         $y = $this->position->getY();
 
         switch ($this->heading) {
-            case CardinalPoint::North:
+            case Heading::North:
                 $y++;
                 break;
-            case CardinalPoint::South:
+            case Heading::South:
                 $y--;
                 break;
-            case CardinalPoint::East:
+            case Heading::East:
                 $x++;
                 break;
-            case CardinalPoint::West:
+            case Heading::West:
                 $x--;
                 break;
         }

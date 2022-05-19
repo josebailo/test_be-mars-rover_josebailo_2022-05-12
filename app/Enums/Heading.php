@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum CardinalPoint: string
+enum Heading: string
 {
     case North = 'N';
     case South = 'S';

@@ -6,7 +6,7 @@ use App\Entities\Instructions;
 use App\Entities\Plateau;
 use App\Entities\Position;
 use App\Entities\Rover;
-use App\Enums\CardinalPoint;
+use App\Enums\Heading;
 use App\Enums\Movements;
 use Error;
 
@@ -58,7 +58,7 @@ class SimulationService
 
         foreach ($roversInformation as $command) {
             $position = new Position($command['position']['x'], $command['position']['y']);
-            $heading = CardinalPoint::from($command['heading']);
+            $heading = Heading::from($command['heading']);
             $rovers[] = new Rover($position, $heading);
         }
 
