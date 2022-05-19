@@ -12,35 +12,19 @@ use Error;
 
 class SimulationService
 {
+    private Plateau $plateau;
+    private array $rovers;
+    private array $roversMovements;
+
     public function simulate(Instructions $instructions): string
     {
-        $plateau = $this->createPlateau($instructions->getPlateauCoordinates());
-        $rovers = $this->createRovers($instructions->getRoversInformation());
-        $roversMovements = $this->createRoversMovements($instructions->getRoversInformation());
+        $roversInformation = $instructions->getRoversInformation();
+        $this->plateau = $this->createPlateau($instructions->getPlateauCoordinates());
+        $this->rovers = $this->createRovers($roversInformation);
+        $this->roversMovements = $this->createRoversMovements($roversInformation);
+        $this->runMovements();
 
-        foreach ($roversMovements as $index => $movements) {
-            $rover = $rovers[$index];
-
-            foreach ($movements as $movement) {
-                if ($movement->isTurningMovement()) {
-                    $movement === Movements::Right ? $rover->turnRight() : $rover->turnLeft();
-                } else {
-                    $roverForwardPosition = $rover->getForwardPosition();
-
-                    if (!$plateau->coordinatesAreValid($roverForwardPosition->getX(), $roverForwardPosition->getY())) {
-                        throw new Error('The next position is out of the plateau. Impossible to move.');
-                    }
-
-                    if (in_array($roverForwardPosition, $this->getRoversPositions($rovers))) {
-                        throw new Error('The next position is already occupied. Impossible to move.');
-                    }
-
-                    $rover->moveForward();
-                }
-            }
-        }
-
-        return $this->createRoversSituationOutput($rovers);
+        return $this->createRoversSituationOutput();
     }
 
     private function createPlateau(array $plateauCoordinates): Plateau
@@ -48,19 +32,21 @@ class SimulationService
         return new Plateau($plateauCoordinates['x'], $plateauCoordinates['y']);
     }
 
-    private function getRoversPositions($rovers): array
+    private function positionIsOccupied($position): bool
     {
-        $positions = [];
-        foreach ($rovers as $rover) {
-            $positions[] = $rover->getPosition();
+        foreach ($this->rovers as $rover) {
+            if ($rover->getPosition()->is($position)) {
+                return true;
+            }
         }
-        return $positions;
+
+        return false;
     }
 
-    private function createRoversSituationOutput($rovers): string
+    private function createRoversSituationOutput(): string
     {
         $situations = [];
-        foreach ($rovers as $rover) {
+        foreach ($this->rovers as $rover) {
             $situations[] = $rover->getSituation();
         }
         return implode("\n", $situations);
@@ -91,5 +77,35 @@ class SimulationService
         }
 
         return $movements;
+    }
+
+    private function runMovements(): void
+    {
+        foreach ($this->roversMovements as $index => $movements) {
+            $rover = $this->rovers[$index];
+
+            foreach ($movements as $movement) {
+                if ($movement->isTurningMovement()) {
+                    $movement === Movements::Right ? $rover->turnRight() : $rover->turnLeft();
+                } else {
+                    $roverForwardPosition = $rover->getForwardPosition();
+
+                    if (
+                        !$this->plateau->coordinatesAreValid(
+                            $roverForwardPosition->getX(),
+                            $roverForwardPosition->getY()
+                        )
+                    ) {
+                        throw new Error('The next position is out of the plateau. Impossible to move.');
+                    }
+
+                    if ($this->positionIsOccupied($roverForwardPosition)) {
+                        throw new Error('The next position is already occupied. Impossible to move.');
+                    }
+
+                    $rover->moveForward();
+                }
+            }
+        }
     }
 }
