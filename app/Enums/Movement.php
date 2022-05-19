@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum Movements: string
+enum Movement: string
 {
     case Left = 'L';
     case Right = 'R';

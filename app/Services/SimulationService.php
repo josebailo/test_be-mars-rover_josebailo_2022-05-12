@@ -7,7 +7,7 @@ use App\Entities\Plateau;
 use App\Entities\Position;
 use App\Entities\Rover;
 use App\Enums\Heading;
-use App\Enums\Movements;
+use App\Enums\Movement;
 use Error;
 
 class SimulationService
@@ -71,7 +71,7 @@ class SimulationService
 
         foreach ($roverCommands as $command) {
             $movements[] = array_map(
-                fn ($movement) => Movements::from($movement),
+                fn ($movement) => Movement::from($movement),
                 $command['movements']
             );
         }
@@ -86,7 +86,7 @@ class SimulationService
 
             foreach ($movements as $movement) {
                 if ($movement->isTurningMovement()) {
-                    $movement === Movements::Right ? $rover->turnRight() : $rover->turnLeft();
+                    $movement === Movement::Right ? $rover->turnRight() : $rover->turnLeft();
                 } else {
                     $roverForwardPosition = $rover->getForwardPosition();
 
