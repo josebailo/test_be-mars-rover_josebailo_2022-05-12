@@ -21,8 +21,6 @@ class Plateau
         if ($yUpperRightCoordinate <= $this->yBottomLeftCoordinate) {
             throw new InvalidYUpperRightCoordinate;
         }
-
-        $this->occupiedPositions = [];
     }
 
     public function coordinatesAreValid(int $x, int $y): bool
