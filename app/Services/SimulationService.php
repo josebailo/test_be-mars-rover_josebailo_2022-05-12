@@ -87,24 +87,22 @@ class SimulationService
             foreach ($movements as $movement) {
                 if ($movement->isTurningMovement()) {
                     $movement === Movement::Right ? $rover->turnRight() : $rover->turnLeft();
-                } else {
-                    $roverForwardPosition = $rover->getForwardPosition();
-
-                    if (
-                        !$this->plateau->coordinatesAreValid(
-                            $roverForwardPosition->getX(),
-                            $roverForwardPosition->getY()
-                        )
-                    ) {
-                        throw new Error('The next position is out of the plateau. Impossible to move.');
-                    }
-
-                    if ($this->positionIsOccupied($roverForwardPosition)) {
-                        throw new Error('The next position is already occupied. Impossible to move.');
-                    }
-
-                    $rover->moveForward();
+                    continue;
                 }
+
+                $roverForwardPosition = $rover->getForwardPosition();
+
+                if (
+                    !$this->plateau->coordinatesAreValid($roverForwardPosition->getX(), $roverForwardPosition->getY())
+                ) {
+                    throw new Error('The next position is out of the plateau. Impossible to move.');
+                }
+
+                if ($this->positionIsOccupied($roverForwardPosition)) {
+                    throw new Error('The next position is already occupied. Impossible to move.');
+                }
+
+                $rover->moveForward();
             }
         }
     }
