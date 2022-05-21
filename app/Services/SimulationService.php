@@ -49,7 +49,7 @@ class SimulationService
         foreach ($this->rovers as $rover) {
             $situations[] = $rover->getSituation();
         }
-        return implode("\n", $situations);
+        return implode(PHP_EOL, $situations);
     }
 
     private function createRovers(array $roversInformation): array

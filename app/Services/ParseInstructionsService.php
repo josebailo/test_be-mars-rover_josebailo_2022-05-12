@@ -30,7 +30,7 @@ class ParseInstructionsService
     {
         self::validateIsNotEmpty($instructions);
 
-        $instructionsLines = explode("\n", $instructions);
+        $instructionsLines = preg_split('/\n\r|\r\n|\n|\r/', $instructions);
         self::validateMinimumOfLines($instructionsLines);
         self::validateOddAmountOfLines($instructionsLines);
 
@@ -97,7 +97,7 @@ class ParseInstructionsService
 
     private static function splitInstructions(string $instructions): array
     {
-        $instructionsLines = explode("\n", $instructions);
+        $instructionsLines = preg_split('/\n\r|\r\n|\n|\r/', $instructions);
         $plateauInstruction = $instructionsLines[0];
         $roversInstructions = array_slice($instructionsLines, 1);
 
