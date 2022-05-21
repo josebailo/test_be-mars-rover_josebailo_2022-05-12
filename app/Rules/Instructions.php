@@ -2,10 +2,13 @@
 
 namespace App\Rules;
 
+use App\Services\ParseInstructionsService;
 use Illuminate\Contracts\Validation\Rule;
 
 class Instructions implements Rule
 {
+    private string $errorMessage;
+
     /**
      * Determine if the validation rule passes.
      *
@@ -15,10 +18,13 @@ class Instructions implements Rule
      */
     public function passes($attribute, $value)
     {
-        $instructionsList = explode("\n", $value);
-
-        return $this->hasMinimumOfInstructions($instructionsList) &&
-            $this->hasAmountOfInstructions($instructionsList);
+        try {
+            ParseInstructionsService::validate($value);
+            return true;
+        } catch (\Throwable $th) {
+            $this->errorMessage = $th->getMessage();
+            return false;
+        }
     }
 
     /**
@@ -28,24 +34,6 @@ class Instructions implements Rule
      */
     public function message()
     {
-        return 'The instructions are not valid.';
-    }
-
-    /**
-     * Has at least the plateau coordinates
-     * and one rover's instructions.
-     */
-    private function hasMinimumOfInstructions($value): bool
-    {
-        return count($value) >= 3;
-    }
-
-    /**
-     * The number of instructions is odd always,
-     * one for the plateau coordinates and two for each rover.
-     */
-    private function hasAmountOfInstructions($value): bool
-    {
-        return count($value) % 2 !== 0;
+        return $this->errorMessage;
     }
 }
