@@ -1,27 +1,28 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Controllers\Simulator;
 
 use Tests\TestCase;
 
-class CommandTest extends TestCase
+class SimulateTest extends TestCase
 {
     /** @test */
     public function the_application_returns_a_successful_output()
     {
-        $response = $this->post('/command', [
-            'instructions' => "5 5\n1 2 N\nL M L M L M L M M\n3 3 E\nM M R M M R M R R M",
+        $instructions = "5 5\n1 2 N\nL M L M L M L M M\n3 3 E\nM M R M M R M R R M";
+        $response = $this->post(route('simulate'), [
+            'instructions' => $instructions,
         ]);
 
-        $response->assertStatus(200)
-            ->assertJsonCount(1)
-            ->assertJsonFragment(['output' => "1 3 N\n5 1 E"]);
+        $response->assertRedirect(route('simulator.raw'))
+            ->assertSessionHas('instructions', $instructions)
+            ->assertSessionHas('output', "1 3 N\n5 1 E");
     }
 
     /** @test */
     public function instructions_are_required()
     {
-        $response = $this->post('/command');
+        $response = $this->post(route('simulate'));
 
         $response->assertStatus(302)
             ->assertSessionHasErrors('instructions');
@@ -30,7 +31,7 @@ class CommandTest extends TestCase
     /** @test */
     public function instructions_must_have_an_odd_number_of_lines()
     {
-        $response = $this->post('/command', [
+        $response = $this->post(route('simulate'), [
             'instructions' => "5 5\n1 2 N",
         ]);
 
@@ -43,7 +44,7 @@ class CommandTest extends TestCase
     /** @test */
     public function instructions_must_have_odd_amount_of_lines()
     {
-        $response = $this->post('/command', [
+        $response = $this->post(route('simulate'), [
             'instructions' => "5 5\n1 2 N \nL M L M L M L M M\n3 3 E",
         ]);
 
@@ -66,7 +67,7 @@ class CommandTest extends TestCase
         ];
 
         foreach ($invalidInstructions as $instructions) {
-            $response = $this->post('/command', ['instructions' => $instructions]);
+            $response = $this->post(route('simulate'), ['instructions' => $instructions]);
             $response->assertStatus(302)
                 ->assertSessionHasErrors([
                     'instructions' => __('exceptions.instructions.invalid_plateau_coordinates'),
@@ -88,7 +89,7 @@ class CommandTest extends TestCase
         ];
 
         foreach ($invalidInstructions as $instructions) {
-            $response = $this->post('/command', ['instructions' => $instructions]);
+            $response = $this->post(route('simulate'), ['instructions' => $instructions]);
             $response->assertStatus(302)
                 ->assertSessionHasErrors([
                     'instructions' => __('exceptions.instructions.invalid_rover_situation'),
@@ -112,7 +113,7 @@ class CommandTest extends TestCase
         ];
 
         foreach ($invalidInstructions as $instructions) {
-            $response = $this->post('/command', ['instructions' => $instructions]);
+            $response = $this->post(route('simulate'), ['instructions' => $instructions]);
             $response->assertStatus(302)
                 ->assertSessionHasErrors([
                     'instructions' => __('exceptions.instructions.invalid_rover_movements'),
