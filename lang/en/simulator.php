@@ -2,6 +2,7 @@
 
 return [
     'instructions' => 'Instructions',
+    'instructions_placeholder' => 'Enter the instructions...',
     'raw_instructions' => 'Raw instructions',
     'raw_instructions_mode' => 'Raw instructions mode',
     'select_mode' => 'Please, select a mode:',

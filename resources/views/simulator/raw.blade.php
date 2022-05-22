@@ -10,7 +10,7 @@
 
             <fieldset>
                 <label for="instructions">{{ __('simulator.instructions') }}:</label>
-                <textarea name="instructions" id="instructions" placeholder="Enter the instructions..." class="mt-4 w-full h-36 px-3 py-2 bg-white text-gray-700 font-mono rounded" autofocus>{{ old('instructions', session('instructions')) }}</textarea>
+                <textarea name="instructions" id="instructions" placeholder="{{ __('simulator.instructions_placeholder') }}" class="mt-4 w-full h-36 px-3 py-2 bg-white text-gray-700 font-mono rounded" autofocus>{{ old('instructions', session('instructions')) }}</textarea>
             </fieldset>
 
             <div class="mt-4 flex flex-row-reverse justify-between items-center gap-2">
