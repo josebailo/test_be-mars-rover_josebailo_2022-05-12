@@ -69,15 +69,18 @@ The application has a basic frontend so the user can enter the instructions and 
 
 #### How to run
 
-I used Sail, a built-in solution of Laravel, to run the application on docker. All you have to do is to run the next commands:
+I used Sail, a built-in solution of Laravel, to run the application on docker.
+
+First you have to make a deploy by running the next command:
 
 ```bash
-cp .env.example .env
-composer install
-./vendor/bin/sail up -d
-./vendor/bin/sail artisan key:generate
-./vendor/bin/sail npm install
-./vendor/bin/sail npm run production
+./bin/deploy.sh
+```
+
+The you just need to run the application with:
+
+```bash
+./bin/up.sh
 ```
 
 Now you can visit http://localhost and see the application running.
@@ -85,8 +88,10 @@ Now you can visit http://localhost and see the application running.
 When you finish you can stop the docker containers by running:
 
 ```bash
-./vendor/bin/sail stop
+./bin/down.sh
 ```
+
+#### How to run without docker
 
 If you don't use docker and have composer and npm installed on you computer you can just run the commands without sail:
 
@@ -103,7 +108,7 @@ npm run production
 If you want to run the PHP tests just run:
 
 ```bash
-./vendor/bin/sail artisan test
+./bin/tests.sh
 ```
 
 If you don't use docker run:
@@ -133,3 +138,5 @@ This cause that the instructions must have a specific format. For example, the t
 At the beginning my idea was to have more features like a new simulator mode with a form to build the instructions instead of writting them in plain text, or a command console to run the simulation on the terminal. But again due to the lack of time I didn't add them.
 
 Also I would have liked to add e2e tests.
+
+And the docker image, if I would had more time I would used a custom docker-composer file instead of using Sail. Right now there are some services in the docker that are not used.
