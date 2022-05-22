@@ -54,4 +54,82 @@ Happy hacking & good luck! 🚀
 ---
 
 ## Candidate's documentation
-_Please provide your documentation and outline your choices here._
+
+### Application
+
+#### Description
+
+I have built a kind of simulator for rovers on Mars. The idea, following the challenge, is that you can simulate the plateau and the rovers' situation and movements. The simulator interprets yous instructions and checks they don't have any sort of problems. It checks:
+
+* The instructions are complete and well formated.
+* The rovers don't go outside the plateau.
+* The rovers don't move forward to a position already occupied by another rover.
+
+The application has a basic frontend so the user can enter the instructions and get the simulation result.
+
+#### How to run
+
+I used Sail, a built-in solution of Laravel, to run the application on docker. All you have to do is to run the next commands:
+
+```bash
+cp .env.example .env
+composer install
+./vendor/bin/sail up -d
+./vendor/bin/sail artisan key:generate
+./vendor/bin/sail npm install
+./vendor/bin/sail npm run production
+```
+
+Now you can visit http://localhost and see the application running.
+
+When you finish you can stop the docker containers by running:
+
+```bash
+./vendor/bin/sail stop
+```
+
+If you don't use docker and have composer and npm installed on you computer you can just run the commands without sail:
+
+```bash
+cp .env.example .env
+composer install
+php artisan key:generate
+npm install
+npm run production
+```
+
+#### How to run the tests
+
+If you want to run the PHP tests just run:
+
+```bash
+./vendor/bin/sail artisan test
+```
+
+If you don't use docker run:
+
+```bash
+php artisan test
+```
+
+### Technical points
+
+I don't have too much free time (15 months old son) so I built the application with Laravel, the PHP framework I'm fluent in. I know at Prescreen Symfony is the framework used but I didn't want to get stuck and loose time. I could spent only between 15 and 18 hours to create the application.
+
+For the frontend, I wanted to build it with Vue. I'm fullstack but the last years I've been more focused on the frontend. But due to lack of time I preferred to keep it simple and just use HTML with CSS.
+
+Regarding how the application works I made some decisions. When reading the instructions I check they are well formatted, that means they have to follow some rules:
+
+* The plateau coordinates must be greater than zero.
+* The rover position must have a valid positions inside the plateau and a valid heading.
+* The rover movements must be valid movements and don't move outside the plateau or in other rover's current position.
+* Every line of the instructions cannot have spaces nor the beginning or the end.
+* There must be at least three lines in the instructions (plateau coordinates and one rover instructions).
+
+This cause that the instructions must have a specific format. For example, the test input given above this README would fail in the simulator because the second line has a space at the end.
+
+### Additional features
+
+At the beginning my idea was to have more features like a new simulator mode with a form to build the instructions instead of writting them in plain text, or a command console to run the simulation on the terminal. But again due to the lack of time I didn't add them.
+
+Also I would have liked to add e2e tests.
